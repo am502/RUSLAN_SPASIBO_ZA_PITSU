@@ -29,8 +29,8 @@ public class JdParser {
 
             List<WebElement> itemList = driver.findElements(By.xpath("//div[@id='J_goodsList']//li"));
 
-            for (WebElement element : itemList) {
-                String link = element
+            for (WebElement li : itemList) {
+                String link = li
                         .findElement(By.xpath(".//div[@class='p-name p-name-type-3']/a"))
                         .getAttribute("href");
                 pageLinks.computeIfAbsent(page, k -> new ArrayList<>()).add(link);
