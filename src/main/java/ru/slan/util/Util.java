@@ -65,4 +65,12 @@ public class Util {
             e.printStackTrace();
         }
     }
+
+    public static WebElement findElementAndIgnore(WebDriver driver, String xpath) {
+        return null;
+    }
+
+    public static List<WebElement> findElementsAndIgnore(WebDriver driver, String xpath) {
+        return null;
+    }
 }
