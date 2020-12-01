@@ -1,7 +1,10 @@
 package ru.slan.util;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -9,6 +12,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class Util {
     public static final String PATH_TO_RESOURCES = "src/main/resources/";
@@ -38,5 +42,27 @@ public class Util {
 
     public static WebElement waitAndGet(WebDriverWait wait, String xpath) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+    }
+
+    public static void scrollDown(WebDriver driver) {
+        driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
+    }
+
+    public static WebDriver initDriver(String url, int wait) {
+        // Нужно скачать chrome driver в зависимости от вашего браузера и указать путь к нему
+        System.setProperty("webdriver.chrome.driver", PATH_TO_RESOURCES + "chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        driver.get(url);
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(wait, TimeUnit.SECONDS);
+        return driver;
+    }
+
+    public static void wait(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
