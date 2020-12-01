@@ -49,6 +49,12 @@ public class AmazonParser {
         Map<Integer, List<String>> pageLinks = new HashMap<>();
 
         // first page
+        driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < ITEMS_PER_PAGE; i++) {
             try {
                 String link = Util.waitAndGet(wait, String.format(FIRST_PAGE_ITEMS, i)).getAttribute("href");
