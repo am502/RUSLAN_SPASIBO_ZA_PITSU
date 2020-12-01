@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class AmazonParser {
+    public static final int DEFAULT_TOTAL_PAGES = 50;
+    
     public static final String A_DE_VODKA_URL = "https://www.amazon.de";
     public static final String A_DE_VODKA_PATH = "/-/en/Wodka-Vodka-Absolut/b/ref=dp_bc_aui_C_4?ie=UTF8&node=364625031";
 
@@ -37,7 +39,11 @@ public class AmazonParser {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
-        int totalPages = Integer.parseInt(Util.waitAndGet(wait, FIRST_PAGE_TOTAL_PAGES).getText());
+        int totalPages = DEFAULT_TOTAL_PAGES;
+        try {
+            totalPages = Integer.parseInt(Util.waitAndGet(wait, FIRST_PAGE_TOTAL_PAGES).getText());
+        } catch (Exception ignored) {
+        }
         System.out.println("total pages: " + totalPages);
 
         Map<Integer, List<String>> pageLinks = new HashMap<>();
@@ -51,7 +57,11 @@ public class AmazonParser {
             }
         }
         // go to next page
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(FIRST_PAGE_NEXT_PAGE_ID))).click();
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(FIRST_PAGE_NEXT_PAGE_ID))).click();
+        } catch (Exception ignored) {
+            click(wait, NORMAL_PAGE_NEXT_PAGE);
+        }
 
         for (int page = 2; page <= totalPages; page++) {
             driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
