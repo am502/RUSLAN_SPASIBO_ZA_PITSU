@@ -14,7 +14,7 @@ public class JdParser {
     private static final String VODKA_FIRST_PAGE_URL = "https://list.jd.com/list.html?cat=12259,14715,14742";
 
     public static void main(String[] args) {
-        WebDriver driver = Util.initDriver(VODKA_FIRST_PAGE_URL, 5);
+        WebDriver driver = Util.initDriver(VODKA_FIRST_PAGE_URL);
 
         int totalPages = Integer.parseInt(
                 driver.findElement(By.xpath("//span[@class='fp-text']/i")).getText()
