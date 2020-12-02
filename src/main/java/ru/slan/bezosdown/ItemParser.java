@@ -45,8 +45,8 @@ public class ItemParser {
             System.exit(0);
         }
 
-        for (int i = 0; i < sers.length; i++) {
-            List<String> links = Util.deserialize(sers[i]);
+        for (int page = 0; page < sers.length; page++) {
+            List<String> links = Util.deserialize(sers[page]);
 
             Map<String, Integer> fieldId = new HashMap<>();
 
@@ -68,12 +68,12 @@ public class ItemParser {
             header.createCell(fieldId.get("Link")).setCellValue("Link");
             header.createCell(fieldId.get("Item name")).setCellValue("Item name");
 
-            for (int j = 0; j < links.size(); j++) {
-                String currentLink = links.get(j);
+            for (int i = 0; i < links.size(); i++) {
+                String currentLink = links.get(i);
 
                 driver.get(currentLink);
 
-                Row currentRow = sheet.createRow(j);
+                Row currentRow = sheet.createRow(i);
 
                 try {
                     String itemName = driver.findElement(By.xpath(ITEM_NAME_XPATH)).getText().trim();
@@ -96,9 +96,9 @@ public class ItemParser {
                 }
                 List<WebElement> ths = table.findElements(By.tagName("th"));
                 List<WebElement> tds = table.findElements(By.tagName("td"));
-                for (int k = 0; k < ths.size(); k++) {
-                    String th = ths.get(k).getText().trim();
-                    String td = tds.get(k).getText().trim();
+                for (int j = 0; j < ths.size(); j++) {
+                    String th = ths.get(j).getText().trim();
+                    String td = tds.get(j).getText().trim();
                     if (fieldId.containsKey(th)) {
                         currentRow.createCell(fieldId.get(th)).setCellValue(td);
                     } else {
@@ -137,7 +137,7 @@ public class ItemParser {
 
             try {
                 FileOutputStream outputStream = new FileOutputStream(
-                        Util.PATH_TO_XLSX + "result_" + i + ".xlsx"
+                        Util.PATH_TO_XLSX + "result_" + (page + 1) + ".xlsx"
                 );
                 workbook.write(outputStream);
                 workbook.close();

@@ -10,7 +10,7 @@ public class AmazonParser {
     public static void main(String[] args) {
         WebDriver driver = Util.initDriver(AMAZON_VODKA_FIRST_PAGE_URL);
 
-//        PageParser.parsePages(driver);
+        PageParser.parsePages(driver);
 
         ItemParser.parseItems(driver);
 
