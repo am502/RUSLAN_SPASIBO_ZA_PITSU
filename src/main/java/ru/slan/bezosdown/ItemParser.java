@@ -136,7 +136,9 @@ public class ItemParser {
             }
 
             try {
-                FileOutputStream outputStream = new FileOutputStream(Util.PATH_TO_XLSX + "result" + i + ".xlsx");
+                FileOutputStream outputStream = new FileOutputStream(
+                        Util.PATH_TO_XLSX + "result_" + i + ".xlsx"
+                );
                 workbook.write(outputStream);
                 workbook.close();
             } catch (IOException e) {
