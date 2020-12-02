@@ -30,7 +30,7 @@ public class JdParser {
     public static void main(String[] args) {
         WebDriver driver = Util.initDriver(FIRST_PAGE_URL);
 
-//        parsePages(driver);
+        parsePages(driver);
 
         parseItems(driver);
 
@@ -56,18 +56,16 @@ public class JdParser {
         header.createCell(fieldId.get(TITLE_KEY)).setCellValue(TITLE_KEY);
         header.createCell(fieldId.get(PRICE_KEY)).setCellValue(PRICE_KEY);
 
+        int currentLinkId = 1;
         for (String ser : sers) {
             List<String> links = Util.deserialize(ser);
-
-            for (int i = 0; i < links.size(); i++) {
-                String currentLink = links.get(i);
-
-                driver.get(currentLink);
+            for (String link : links) {
+                driver.get(link);
                 // Util.wait(2);
                 // Util.scrollDown(driver);
                 // Util.wait(2);
 
-                Row currentRow = sheet.createRow(i);
+                Row currentRow = sheet.createRow(currentLinkId);
 
                 String name = driver.findElement(By.xpath(TITLE_XPATH)).getText().trim();
                 currentRow.createCell(fieldId.get(TITLE_KEY)).setCellValue(name);
@@ -75,7 +73,7 @@ public class JdParser {
                 String price = driver.findElement(By.xpath(PRICE_XPATH)).getText().trim();
                 currentRow.createCell(fieldId.get(PRICE_KEY)).setCellValue(price);
 
-                currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(currentLink);
+                currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(link);
 
                 List<WebElement> lis = driver.
                         findElement(
@@ -96,6 +94,8 @@ public class JdParser {
                     }
                 }
             }
+
+            currentLinkId++;
         }
 
         try {
