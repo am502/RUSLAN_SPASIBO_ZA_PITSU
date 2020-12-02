@@ -45,6 +45,7 @@ public class ItemParser {
             System.exit(0);
         }
 
+        // TODO: one xlsx file
         for (int page = 0; page < sers.length; page++) {
             List<String> links = Util.deserialize(sers[page]);
 
@@ -65,13 +66,14 @@ public class ItemParser {
             Sheet sheet = workbook.createSheet("Data");
 
             Row header = sheet.createRow(0);
-            header.createCell(fieldId.get("Link")).setCellValue("Link");
-            header.createCell(fieldId.get("Item name")).setCellValue("Item name");
+            header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
+            header.createCell(fieldId.get(ITEM_KEY)).setCellValue(ITEM_KEY);
 
             for (int i = 0; i < links.size(); i++) {
                 String currentLink = links.get(i);
 
                 driver.get(currentLink);
+                Util.wait(2);
 
                 Row currentRow = sheet.createRow(i);
 

@@ -4,8 +4,7 @@ import org.openqa.selenium.WebDriver;
 import ru.slan.util.Util;
 
 public class AmazonParser {
-    public static final String AMAZON_VODKA_FIRST_PAGE_URL = "https://www.amazon.de" +
-            "/-/en/Wodka-Vodka-Absolut/b/ref=dp_bc_aui_C_4?ie=UTF8&node=364625031";
+    public static final String AMAZON_VODKA_FIRST_PAGE_URL = "https://www.amazon.de/s?k=Waffles&rh=n%3A364631031&ref=nb_sb_noss";
 
     public static void main(String[] args) {
         WebDriver driver = Util.initDriver(AMAZON_VODKA_FIRST_PAGE_URL);
