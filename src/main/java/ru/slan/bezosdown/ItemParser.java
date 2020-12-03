@@ -62,6 +62,14 @@ public class ItemParser {
         Row header = sheet.createRow(0);
         header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
         header.createCell(fieldId.get(ITEM_KEY)).setCellValue(ITEM_KEY);
+        header.createCell(fieldId.get(PRICE_KEY)).setCellValue(PRICE_KEY);
+
+        header.createCell(fieldId.get(REVIEWS_COUNT_KEY)).setCellValue(REVIEWS_COUNT_KEY);
+        header.createCell(fieldId.get(RATING_KEY)).setCellValue(RATING_KEY);
+
+        header.createCell(fieldId.get(BSR_CHECK)).setCellValue(BSR_CHECK);
+
+        header.createCell(fieldId.get(DFA_CHECK)).setCellValue(DFA_CHECK);
 
         int currentLinkId = 1;
         for (String ser : sers) {

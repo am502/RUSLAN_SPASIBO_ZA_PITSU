@@ -51,7 +51,9 @@ public class PageParser {
                 }
             }
 
-            Util.serialize(links, "links_" + page + ".ser");
+            if (links != null) {
+                Util.serialize(links, "links_" + page + ".ser");
+            }
 
             try {
                 driver.findElement(By.id(FIRST_PAGE_NEXT_PAGE_ID)).click();
