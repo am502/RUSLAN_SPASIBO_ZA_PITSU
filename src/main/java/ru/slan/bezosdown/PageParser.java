@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PageParser {
-    private static final int DEFAULT_TOTAL_PAGES = 50;
-    private static final int ITEMS_PER_PAGE = 50;
     private static final String FIRST_PAGE_TOTAL_PAGES_XPATH = "//div[@id='pagn']//span[@class='pagnDisabled']";
     private static final String FIRST_PAGE_ITEMS_XPATH = "//li[@id='result_%s']//div[@class='a-row a-spacing-base']" +
             "//a";
@@ -19,7 +17,7 @@ public class PageParser {
     private static final String NORMAL_PAGE_NEXT_PAGE_XPATH = "//li[@class='a-last']";
 
     public static void parsePages(WebDriver driver) {
-        int totalPages = DEFAULT_TOTAL_PAGES;
+        int totalPages = Util.DEFAULT_TOTAL_PAGES;
         try {
             totalPages = Integer.parseInt(
                     driver.findElement(By.xpath(FIRST_PAGE_TOTAL_PAGES_XPATH)).getText()
@@ -36,7 +34,7 @@ public class PageParser {
             Util.wait(2);
 
             List<String> links = new ArrayList<>();
-            for (int i = 0; i < ITEMS_PER_PAGE; i++) {
+            for (int i = 0; i < Util.ITEMS_PER_PAGE; i++) {
                 String link = null;
                 try {
                     link = getHrefByXpath(driver, String.format(FIRST_PAGE_ITEMS_XPATH, i));

@@ -56,6 +56,7 @@ public class JdParser {
         Row header = sheet.createRow(0);
         header.createCell(fieldId.get(TITLE_KEY)).setCellValue(TITLE_KEY);
         header.createCell(fieldId.get(PRICE_KEY)).setCellValue(PRICE_KEY);
+        header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
 
         int currentLinkId = 1;
         for (String ser : sers) {
@@ -68,21 +69,32 @@ public class JdParser {
 
                 Row currentRow = sheet.createRow(currentLinkId);
 
-                String name = driver.findElement(By.xpath(TITLE_XPATH)).getText().trim();
-                currentRow.createCell(fieldId.get(TITLE_KEY)).setCellValue(name);
+                try {
+                    String name = driver.findElement(By.xpath(TITLE_XPATH)).getText().trim();
+                    currentRow.createCell(fieldId.get(TITLE_KEY)).setCellValue(name);
+                } catch (Exception ignored) {
+                }
 
-                String price = driver.findElement(By.xpath(PRICE_XPATH)).getText().trim();
-                currentRow.createCell(fieldId.get(PRICE_KEY)).setCellValue(price);
+                try {
+                    String price = driver.findElement(By.xpath(PRICE_XPATH)).getText().trim();
+                    currentRow.createCell(fieldId.get(PRICE_KEY)).setCellValue(price);
+                } catch (Exception ignored) {
+                }
 
                 currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(link);
 
-                List<WebElement> lis = driver.
-                        findElement(
-                                By.xpath("//ul[@class='parameter2 p-parameter-list']")
-                        )
-                        .findElements(
-                                By.tagName("li")
-                        );
+                List<WebElement> lis;
+                try {
+                    lis = driver.
+                            findElement(
+                                    By.xpath("//ul[@class='parameter2 p-parameter-list']")
+                            )
+                            .findElements(
+                                    By.tagName("li")
+                            );
+                } catch (Exception e) {
+                    continue;
+                }
                 for (WebElement li : lis) {
                     String[] keyValue = li.getText().split("：");
                     if (fieldId.containsKey(keyValue[0].trim())) {
@@ -107,30 +119,43 @@ public class JdParser {
     }
 
     private static void parsePages(WebDriver driver) {
-        int totalPages = Integer.parseInt(
-                driver.findElement(By.xpath("//span[@class='fp-text']/i")).getText()
-        );
+        int totalPages = Util.DEFAULT_TOTAL_PAGES;
+        try {
+            totalPages = Integer.parseInt(
+                    driver.findElement(By.xpath("//span[@class='fp-text']/i")).getText()
+            );
+        } catch (Exception ignored) {
+        }
 
         List<String> links = new ArrayList<>();
         for (int page = 1; page <= totalPages; page++) {
             Util.scrollDown(driver);
             Util.wait(2);
 
-            List<WebElement> itemList = driver.findElements(By.xpath("//div[@id='J_goodsList']//li"));
-
+            List<WebElement> itemList;
+            try {
+                itemList = driver.findElements(By.xpath("//div[@id='J_goodsList']//li"));
+            } catch (Exception e) {
+                continue;
+            }
             for (WebElement li : itemList) {
-                String link = li
-                        .findElement(By.xpath(".//div[@class='p-name p-name-type-3']/a"))
-                        .getAttribute("href");
-                links.add(link);
+                try {
+                    String link = li
+                            .findElement(By.xpath(".//div[@class='p-name p-name-type-3']/a"))
+                            .getAttribute("href");
+                    links.add(link);
+                } catch (Exception ignored) {
+                }
+            }
+
+            if (links != null) {
+                Util.serialize(links, "links_" + page + ".ser");
             }
 
             try {
                 driver.findElement(By.xpath("//div[@id='J_bottomPage']//a[@class='pn-next']")).click();
             } catch (Exception ignored) {
             }
-
-            Util.serialize(links, "links_" + page + ".ser");
         }
     }
 }

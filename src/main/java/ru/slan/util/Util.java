@@ -10,6 +10,9 @@ import java.io.*;
 import java.util.List;
 
 public class Util {
+    public static final int DEFAULT_TOTAL_PAGES = 50;
+    public static final int ITEMS_PER_PAGE = 50;
+
     public static final String PATH_TO_RESOURCES = "src/main/resources/";
     public static final String PATH_TO_SER = "src/main/resources/ser/";
     public static final String PATH_TO_XLSX = "src/main/resources/xlsx/";
