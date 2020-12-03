@@ -2,6 +2,8 @@ package ru.slan.bezosdown;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.slan.util.Util;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ public class PageParser {
     private static final String NORMAL_PAGE_NEXT_PAGE_XPATH = "//li[@class='a-last']";
 
     public static void parsePages(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, 2);
+
         int totalPages = Util.DEFAULT_TOTAL_PAGES;
         try {
             totalPages = Integer.parseInt(
@@ -30,8 +34,8 @@ public class PageParser {
         for (int page = 1; page <= totalPages; page++) {
             System.out.println("current page: " + page);
 
-            Util.scrollDown(driver);
-            Util.wait(2);
+            // Util.scrollDown(driver);
+            // Util.wait(2);
 
             List<String> links = new ArrayList<>();
             for (int i = 0; i < Util.ITEMS_PER_PAGE; i++) {
@@ -54,10 +58,10 @@ public class PageParser {
             }
 
             try {
-                driver.findElement(By.id(FIRST_PAGE_NEXT_PAGE_ID)).click();
+                wait.until(ExpectedConditions.elementToBeClickable(By.id(FIRST_PAGE_NEXT_PAGE_ID))).click();
             } catch (Exception e) {
                 try {
-                    driver.findElement(By.xpath(NORMAL_PAGE_NEXT_PAGE_XPATH)).click();
+                    wait.until(ExpectedConditions.elementToBeClickable(By.xpath(NORMAL_PAGE_NEXT_PAGE_XPATH))).click();
                 } catch (Exception ignored) {
                 }
             }
