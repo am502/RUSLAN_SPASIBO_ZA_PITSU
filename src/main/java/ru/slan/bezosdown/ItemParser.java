@@ -10,8 +10,6 @@ import org.openqa.selenium.WebElement;
 import ru.slan.util.Util;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,41 +43,38 @@ public class ItemParser {
             System.exit(0);
         }
 
-        // TODO: one xlsx file
-        for (int page = 0; page < sers.length; page++) {
-            List<String> links = Util.deserialize(sers[page]);
+        Map<String, Integer> fieldId = new HashMap<>();
 
-            Map<String, Integer> fieldId = new HashMap<>();
+        fieldId.put(LINK_KEY, getId());
+        fieldId.put(ITEM_KEY, getId());
+        fieldId.put(PRICE_KEY, getId());
 
-            fieldId.put(LINK_KEY, getId());
-            fieldId.put(ITEM_KEY, getId());
-            fieldId.put(PRICE_KEY, getId());
+        fieldId.put(REVIEWS_COUNT_KEY, getId());
+        fieldId.put(RATING_KEY, getId());
 
-            fieldId.put(REVIEWS_COUNT_KEY, getId());
-            fieldId.put(RATING_KEY, getId());
+        fieldId.put(BSR_CHECK, getId());
 
-            fieldId.put(BSR_CHECK, getId());
+        fieldId.put(DFA_CHECK, getId());
 
-            fieldId.put(DFA_CHECK, getId());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Data");
 
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("Data");
+        Row header = sheet.createRow(0);
+        header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
+        header.createCell(fieldId.get(ITEM_KEY)).setCellValue(ITEM_KEY);
 
-            Row header = sheet.createRow(0);
-            header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
-            header.createCell(fieldId.get(ITEM_KEY)).setCellValue(ITEM_KEY);
-
-            for (int i = 0; i < links.size(); i++) {
-                String currentLink = links.get(i);
-
-                driver.get(currentLink);
+        int currentLinkId = 1;
+        for (String ser : sers) {
+            List<String> links = Util.deserialize(ser);
+            for (String link : links) {
+                driver.get(link);
                 Util.wait(2);
 
-                Row currentRow = sheet.createRow(i);
+                Row currentRow = sheet.createRow(currentLinkId);
 
                 try {
                     String itemName = driver.findElement(By.xpath(ITEM_NAME_XPATH)).getText().trim();
-                    currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(currentLink);
+                    currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(link);
                     currentRow.createCell(fieldId.get(ITEM_KEY)).setCellValue(itemName);
                 } catch (Exception ignored) {
                 }
@@ -135,18 +130,12 @@ public class ItemParser {
                             break;
                     }
                 }
-            }
 
-            try {
-                FileOutputStream outputStream = new FileOutputStream(
-                        Util.PATH_TO_XLSX + "result_" + (page + 1) + ".xlsx"
-                );
-                workbook.write(outputStream);
-                workbook.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                currentLinkId++;
             }
         }
+
+        Util.saveXlsx(workbook);
     }
 
     private static int getId() {

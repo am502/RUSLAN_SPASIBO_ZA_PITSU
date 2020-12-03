@@ -10,9 +10,10 @@ import org.openqa.selenium.WebElement;
 import ru.slan.util.Util;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JdParser {
     private static int id = 0;
@@ -61,7 +62,7 @@ public class JdParser {
             List<String> links = Util.deserialize(ser);
             for (String link : links) {
                 driver.get(link);
-                // Util.wait(2);
+                Util.wait(2);
                 // Util.scrollDown(driver);
                 // Util.wait(2);
 
@@ -98,15 +99,7 @@ public class JdParser {
             currentLinkId++;
         }
 
-        try {
-            FileOutputStream outputStream = new FileOutputStream(
-                    Util.PATH_TO_XLSX + "result.xlsx"
-            );
-            workbook.write(outputStream);
-            workbook.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Util.saveXlsx(workbook);
     }
 
     private static int getId() {

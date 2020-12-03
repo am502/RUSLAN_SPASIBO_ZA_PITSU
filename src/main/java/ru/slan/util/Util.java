@@ -1,5 +1,6 @@
 package ru.slan.util;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -58,6 +59,18 @@ public class Util {
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveXlsx(Workbook workbook) {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(
+                    Util.PATH_TO_XLSX + "result.xlsx"
+            );
+            workbook.write(outputStream);
+            workbook.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
