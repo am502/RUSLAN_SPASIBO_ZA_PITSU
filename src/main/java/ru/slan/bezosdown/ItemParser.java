@@ -75,7 +75,11 @@ public class ItemParser {
         for (String ser : sers) {
             List<String> links = Util.deserialize(ser);
             for (String link : links) {
-                driver.get(link);
+                try {
+                    driver.get(link);
+                } catch (Exception ignored) {
+                    continue;
+                }
                 Util.wait(2);
 
                 Row currentRow = sheet.createRow(currentLinkId);
