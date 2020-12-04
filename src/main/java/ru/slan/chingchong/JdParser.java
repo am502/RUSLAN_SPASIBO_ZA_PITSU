@@ -110,9 +110,9 @@ public class JdParser {
                         currentRow.createCell(id).setCellValue(keyValue[1].trim());
                     }
                 }
+                
+                currentLinkId++;
             }
-
-            currentLinkId++;
         }
 
         Util.saveXlsx(workbook);
