@@ -62,7 +62,11 @@ public class JdParser {
         for (String ser : sers) {
             List<String> links = Util.deserialize(ser);
             for (String link : links) {
-                driver.get(link);
+                try {
+                    driver.get(link);
+                } catch (Exception ignored) {
+                    continue;
+                }
                 Util.wait(2);
                 // Util.scrollDown(driver);
                 // Util.wait(2);
