@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class JdParser {
     private static int id = 0;
@@ -28,10 +29,22 @@ public class JdParser {
 
     private static final String LINK_KEY = "Link";
 
+    private static final String COMMENT_COUNT_XPATH = "//div[@id='comment-count']//a";
+    private static final String COMMENT_COUNT_KEY = "Comment count";
+
+    private static final String RATING_XPATH = "//div[@class='percent-con']";
+    private static final String RATING_KEY = "Rating";
+
+    private static final String SECOND_TAB_DET_XPATH_CLICK = "//div[@class='detail']//div[@class='tab-main large']" +
+            "//li[2]";
+
+    private static final String SECOND_TAB_DET_XPATH = "//div[@class='Ptable']";
+
     public static void main(String[] args) {
         WebDriver driver = Util.initDriver(FIRST_PAGE_URL);
+        driver.manage().timeouts().pageLoadTimeout(4, TimeUnit.SECONDS);
 
-        parsePages(driver);
+        parsePages(driver, 1);
 
         parseItems(driver);
 
@@ -49,6 +62,8 @@ public class JdParser {
         fieldId.put(TITLE_KEY, getId());
         fieldId.put(PRICE_KEY, getId());
         fieldId.put(LINK_KEY, getId());
+        fieldId.put(COMMENT_COUNT_KEY, getId());
+        fieldId.put(RATING_KEY, getId());
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Data");
@@ -57,19 +72,19 @@ public class JdParser {
         header.createCell(fieldId.get(TITLE_KEY)).setCellValue(TITLE_KEY);
         header.createCell(fieldId.get(PRICE_KEY)).setCellValue(PRICE_KEY);
         header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
+        header.createCell(fieldId.get(COMMENT_COUNT_KEY)).setCellValue(COMMENT_COUNT_KEY);
+        header.createCell(fieldId.get(RATING_KEY)).setCellValue(RATING_KEY);
 
         int currentLinkId = 1;
         for (String ser : sers) {
             List<String> links = Util.deserialize(ser);
             for (String link : links) {
+                System.out.println("current link id: " + currentLinkId);
+
                 try {
                     driver.get(link);
                 } catch (Exception ignored) {
-                    continue;
                 }
-                Util.wait(2);
-                // Util.scrollDown(driver);
-                // Util.wait(2);
 
                 Row currentRow = sheet.createRow(currentLinkId);
 
@@ -86,6 +101,12 @@ public class JdParser {
                 }
 
                 currentRow.createCell(fieldId.get(LINK_KEY)).setCellValue(link);
+
+                try {
+                    String commentCount = driver.findElement(By.xpath(COMMENT_COUNT_XPATH)).getText().trim();
+                    currentRow.createCell(fieldId.get(COMMENT_COUNT_KEY)).setCellValue(commentCount);
+                } catch (Exception ignored) {
+                }
 
                 List<WebElement> lis;
                 try {
@@ -110,7 +131,48 @@ public class JdParser {
                         currentRow.createCell(id).setCellValue(keyValue[1].trim());
                     }
                 }
-                
+
+                try {
+                    driver.findElement(By.xpath(SECOND_TAB_DET_XPATH_CLICK)).click();
+                    Util.wait(1);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                WebElement div;
+                try {
+                    div = driver.findElement(By.xpath(SECOND_TAB_DET_XPATH));
+                } catch (Exception e) {
+                    continue;
+                }
+                List<WebElement> dts = div.findElements(By.tagName("dt"));
+                List<WebElement> dds = div.findElements(By.tagName("dd"));
+                for (int j = 0; j < dts.size(); j++) {
+                    String dt = dts.get(j).getText();
+                    String dd = dds.get(j).getText();
+                    if (fieldId.containsKey(dt)) {
+                        currentRow.createCell(fieldId.get(dt)).setCellValue(dd);
+                    } else {
+                        int id = getId();
+                        fieldId.put(dt, id);
+                        header.createCell(id).setCellValue(dt);
+                        currentRow.createCell(id).setCellValue(dd);
+                    }
+                }
+
+                Util.scrollDown(driver);
+                Util.scrollDown(driver);
+                Util.wait(1);
+                Util.scrollDown(driver);
+                Util.wait(1);
+                Util.scrollDown(driver);
+
+                try {
+                    String rating = driver.findElement(By.xpath(RATING_XPATH)).getText().trim();
+                    currentRow.createCell(fieldId.get(RATING_KEY)).setCellValue(rating);
+                } catch (Exception ignored) {
+                }
+
                 currentLinkId++;
             }
         }
@@ -122,15 +184,7 @@ public class JdParser {
         return id++;
     }
 
-    private static void parsePages(WebDriver driver) {
-        int totalPages = Util.DEFAULT_TOTAL_PAGES;
-        try {
-            totalPages = Integer.parseInt(
-                    driver.findElement(By.xpath("//span[@class='fp-text']/i")).getText()
-            );
-        } catch (Exception ignored) {
-        }
-
+    private static void parsePages(WebDriver driver, int totalPages) {
         List<String> links = new ArrayList<>();
         for (int page = 1; page <= totalPages; page++) {
             Util.scrollDown(driver);

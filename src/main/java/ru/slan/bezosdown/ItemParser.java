@@ -80,7 +80,6 @@ public class ItemParser {
                 } catch (Exception ignored) {
                     continue;
                 }
-                Util.wait(2);
 
                 Row currentRow = sheet.createRow(currentLinkId);
 
