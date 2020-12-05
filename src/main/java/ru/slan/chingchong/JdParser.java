@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class JdParser {
     private static int id = 0;
 
-    private static final String FIRST_PAGE_URL = "https://list.jd.com/list.html?cat=12259,14715,14742";
+    private static final String FIRST_PAGE_URL = "https://list.jd.com/list.html?cat=1320,5019,5020&tid=17629";
 
     private static final String TITLE_XPATH = "//div[@class='sku-name']";
     private static final String TITLE_KEY = "Title";
@@ -44,7 +44,7 @@ public class JdParser {
         WebDriver driver = Util.initDriver(FIRST_PAGE_URL);
         driver.manage().timeouts().pageLoadTimeout(4, TimeUnit.SECONDS);
 
-        parsePages(driver, 1);
+        parsePages(driver, 2);
 
         parseItems(driver);
 
@@ -121,16 +121,21 @@ public class JdParser {
                     continue;
                 }
                 for (WebElement li : lis) {
-                    String[] keyValue = li.getText().split("：");
-                    if (fieldId.containsKey(keyValue[0].trim())) {
-                        currentRow.createCell(fieldId.get(keyValue[0].trim())).setCellValue(keyValue[1].trim());
-                    } else {
-                        int id = getId();
-                        fieldId.put(keyValue[0].trim(), id);
-                        header.createCell(id).setCellValue(keyValue[0].trim());
-                        currentRow.createCell(id).setCellValue(keyValue[1].trim());
+                    try {
+                        String[] keyValue = li.getText().split("：");
+                        if (fieldId.containsKey(keyValue[0].trim())) {
+                            currentRow.createCell(fieldId.get(keyValue[0].trim())).setCellValue(keyValue[1].trim());
+                        } else {
+                            int id = getId();
+                            fieldId.put(keyValue[0].trim(), id);
+                            header.createCell(id).setCellValue(keyValue[0].trim());
+                            currentRow.createCell(id).setCellValue(keyValue[1].trim());
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
+
+                Util.wait(1);
 
                 try {
                     driver.findElement(By.xpath(SECOND_TAB_DET_XPATH_CLICK)).click();
@@ -148,15 +153,18 @@ public class JdParser {
                 List<WebElement> dts = div.findElements(By.tagName("dt"));
                 List<WebElement> dds = div.findElements(By.tagName("dd"));
                 for (int j = 0; j < dts.size(); j++) {
-                    String dt = dts.get(j).getText();
-                    String dd = dds.get(j).getText();
-                    if (fieldId.containsKey(dt)) {
-                        currentRow.createCell(fieldId.get(dt)).setCellValue(dd);
-                    } else {
-                        int id = getId();
-                        fieldId.put(dt, id);
-                        header.createCell(id).setCellValue(dt);
-                        currentRow.createCell(id).setCellValue(dd);
+                    try {
+                        String dt = dts.get(j).getText();
+                        String dd = dds.get(j).getText();
+                        if (fieldId.containsKey(dt)) {
+                            currentRow.createCell(fieldId.get(dt)).setCellValue(dd);
+                        } else {
+                            int id = getId();
+                            fieldId.put(dt, id);
+                            header.createCell(id).setCellValue(dt);
+                            currentRow.createCell(id).setCellValue(dd);
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
 
