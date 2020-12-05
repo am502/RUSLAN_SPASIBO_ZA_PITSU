@@ -29,14 +29,6 @@ public class ItemParser {
     private static final String ITEM_KEY = "Item name";
     private static final String PRICE_KEY = "Price";
 
-    private static final String CUSTOMER_REVIEWS_CHECK = "Customer Reviews";
-    private static final String REVIEWS_COUNT_KEY = "Reviews count";
-    private static final String RATING_KEY = "Rating";
-
-    private static final String BSR_CHECK = "Best Sellers Rank";
-
-    private static final String DFA_CHECK = "Date First Available";
-
     public static void parseItems(WebDriver driver) {
         String[] sers = new File(Util.PATH_TO_SER).list();
         if (sers == null || sers.length == 0) {
@@ -49,13 +41,6 @@ public class ItemParser {
         fieldId.put(ITEM_KEY, getId());
         fieldId.put(PRICE_KEY, getId());
 
-        fieldId.put(REVIEWS_COUNT_KEY, getId());
-        fieldId.put(RATING_KEY, getId());
-
-        fieldId.put(BSR_CHECK, getId());
-
-        fieldId.put(DFA_CHECK, getId());
-
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Data");
 
@@ -63,13 +48,6 @@ public class ItemParser {
         header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
         header.createCell(fieldId.get(ITEM_KEY)).setCellValue(ITEM_KEY);
         header.createCell(fieldId.get(PRICE_KEY)).setCellValue(PRICE_KEY);
-
-        header.createCell(fieldId.get(REVIEWS_COUNT_KEY)).setCellValue(REVIEWS_COUNT_KEY);
-        header.createCell(fieldId.get(RATING_KEY)).setCellValue(RATING_KEY);
-
-        header.createCell(fieldId.get(BSR_CHECK)).setCellValue(BSR_CHECK);
-
-        header.createCell(fieldId.get(DFA_CHECK)).setCellValue(DFA_CHECK);
 
         int currentLinkId = 1;
         for (String ser : sers) {
@@ -105,15 +83,18 @@ public class ItemParser {
                 List<WebElement> ths = table.findElements(By.tagName("th"));
                 List<WebElement> tds = table.findElements(By.tagName("td"));
                 for (int j = 0; j < ths.size(); j++) {
-                    String th = ths.get(j).getText().trim();
-                    String td = tds.get(j).getText().trim();
-                    if (fieldId.containsKey(th)) {
-                        currentRow.createCell(fieldId.get(th)).setCellValue(td);
-                    } else {
-                        int id = getId();
-                        fieldId.put(th, id);
-                        header.createCell(id).setCellValue(th);
-                        currentRow.createCell(id).setCellValue(td);
+                    try {
+                        String th = ths.get(j).getText().trim();
+                        String td = tds.get(j).getText().trim();
+                        if (fieldId.containsKey(th)) {
+                            currentRow.createCell(fieldId.get(th)).setCellValue(td);
+                        } else {
+                            int id = getId();
+                            fieldId.put(th, id);
+                            header.createCell(id).setCellValue(th);
+                            currentRow.createCell(id).setCellValue(td);
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
 
@@ -125,20 +106,18 @@ public class ItemParser {
                 ths = table.findElements(By.tagName("th"));
                 tds = table.findElements(By.tagName("td"));
                 for (int k = 0; k < ths.size(); k++) {
-                    String th = ths.get(k).getText().trim();
-                    String td = tds.get(k).getText().trim();
-                    switch (th) {
-                        case CUSTOMER_REVIEWS_CHECK:
-                            String reviewsCount = table.findElement(By.id("acrCustomerReviewText")).getText();
-                            currentRow.createCell(fieldId.get(REVIEWS_COUNT_KEY)).setCellValue(reviewsCount);
-                            currentRow.createCell(fieldId.get(RATING_KEY)).setCellValue(td);
-                            break;
-                        case BSR_CHECK:
-                            currentRow.createCell(fieldId.get(BSR_CHECK)).setCellValue(td);
-                            break;
-                        case DFA_CHECK:
-                            currentRow.createCell(fieldId.get(DFA_CHECK)).setCellValue(td);
-                            break;
+                    try {
+                        String th = ths.get(k).getText().trim();
+                        String td = tds.get(k).getText().trim();
+                        if (fieldId.containsKey(th)) {
+                            currentRow.createCell(fieldId.get(th)).setCellValue(td);
+                        } else {
+                            int id = getId();
+                            fieldId.put(th, id);
+                            header.createCell(id).setCellValue(th);
+                            currentRow.createCell(id).setCellValue(td);
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
 
