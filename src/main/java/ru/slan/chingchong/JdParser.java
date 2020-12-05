@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
 public class JdParser {
     private static int id = 0;
 
-    private static final String FIRST_PAGE_URL = "https://list.jd.com/list.html?cat=1320,5019,5020&tid=17629";
+    private static final String FIRST_PAGE_URL = "https://list.jd.com/list.html" +
+            "?cat=1320,1583,1590&ev=878_13878^&cid3=1590";
 
     private static final String TITLE_XPATH = "//div[@class='sku-name']";
     private static final String TITLE_KEY = "Title";
@@ -38,13 +39,16 @@ public class JdParser {
     private static final String SECOND_TAB_DET_XPATH_CLICK = "//div[@class='detail']//div[@class='tab-main large']" +
             "//li[2]";
 
+    private static final String FIFTH_TAB_DET_XPATH_CLICK = "//div[@class='detail']//div[@class='tab-main large']" +
+            "//li[5]";
+
     private static final String SECOND_TAB_DET_XPATH = "//div[@class='Ptable']";
 
     public static void main(String[] args) {
         WebDriver driver = Util.initDriver(FIRST_PAGE_URL);
         driver.manage().timeouts().pageLoadTimeout(4, TimeUnit.SECONDS);
 
-        parsePages(driver, 2);
+        parsePages(driver, 1);
 
         parseItems(driver);
 
@@ -135,14 +139,14 @@ public class JdParser {
                     }
                 }
 
-                Util.wait(1);
-
                 try {
                     driver.findElement(By.xpath(SECOND_TAB_DET_XPATH_CLICK)).click();
-                    Util.wait(1);
                 } catch (Exception e) {
                     continue;
                 }
+
+                Util.scrollDown(driver);
+                Util.wait(2000);
 
                 WebElement div;
                 try {
@@ -168,13 +172,6 @@ public class JdParser {
                     }
                 }
 
-                Util.scrollDown(driver);
-                Util.scrollDown(driver);
-                Util.wait(1);
-                Util.scrollDown(driver);
-                Util.wait(1);
-                Util.scrollDown(driver);
-
                 try {
                     String rating = driver.findElement(By.xpath(RATING_XPATH)).getText().trim();
                     currentRow.createCell(fieldId.get(RATING_KEY)).setCellValue(rating);
@@ -193,10 +190,12 @@ public class JdParser {
     }
 
     private static void parsePages(WebDriver driver, int totalPages) {
-        List<String> links = new ArrayList<>();
         for (int page = 1; page <= totalPages; page++) {
+            System.out.println("current page: " + page);
+            List<String> links = new ArrayList<>();
+
             Util.scrollDown(driver);
-            Util.wait(2);
+            Util.wait(2000);
 
             List<WebElement> itemList;
             try {

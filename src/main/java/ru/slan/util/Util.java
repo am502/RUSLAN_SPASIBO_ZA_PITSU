@@ -58,9 +58,9 @@ public class Util {
         return driver;
     }
 
-    public static void wait(int seconds) {
+    public static void wait(int ms) {
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep(ms);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

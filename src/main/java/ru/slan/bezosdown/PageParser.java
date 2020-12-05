@@ -33,7 +33,6 @@ public class PageParser {
         // TODO: add continue from particular page
         for (int page = 1; page <= totalPages; page++) {
             System.out.println("current page: " + page);
-
             // Util.scrollDown(driver);
             // Util.wait(2);
 
@@ -66,7 +65,7 @@ public class PageParser {
                 }
             }
 
-            Util.wait(2);
+            Util.wait(2000);
         }
     }
 
