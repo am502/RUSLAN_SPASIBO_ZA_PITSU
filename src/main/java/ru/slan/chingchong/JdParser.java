@@ -39,9 +39,6 @@ public class JdParser {
     private static final String SECOND_TAB_DET_XPATH_CLICK = "//div[@class='detail']//div[@class='tab-main large']" +
             "//li[2]";
 
-    private static final String FIFTH_TAB_DET_XPATH_CLICK = "//div[@class='detail']//div[@class='tab-main large']" +
-            "//li[5]";
-
     private static final String SECOND_TAB_DET_XPATH = "//div[@class='Ptable']";
 
     public static void main(String[] args) {
@@ -78,6 +75,8 @@ public class JdParser {
         header.createCell(fieldId.get(LINK_KEY)).setCellValue(LINK_KEY);
         header.createCell(fieldId.get(COMMENT_COUNT_KEY)).setCellValue(COMMENT_COUNT_KEY);
         header.createCell(fieldId.get(RATING_KEY)).setCellValue(RATING_KEY);
+
+        System.out.println("total pages: " + sers.length);
 
         int currentLinkId = 1;
         for (String ser : sers) {
@@ -206,9 +205,10 @@ public class JdParser {
             for (WebElement li : itemList) {
                 try {
                     String link = li
-                            .findElement(By.xpath(".//div[@class='p-name p-name-type-3']/a"))
+                            .findElement(By.xpath(".//div[@class='p-img']/a"))
                             .getAttribute("href");
                     links.add(link);
+                    System.out.println("link: " + link);
                 } catch (Exception ignored) {
                 }
             }
